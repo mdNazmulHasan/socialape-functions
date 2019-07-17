@@ -7,7 +7,8 @@ exports.helloWorld = functions.https.onRequest((request, response) => {
 });
 
 exports.getScreams = functions.https.onRequest((req, res) => {
-  admin.firestore()
+  admin
+    .firestore()
     .collection("screams")
     .get()
     .then(data => {
@@ -16,6 +17,23 @@ exports.getScreams = functions.https.onRequest((req, res) => {
         screams.push(doc.data());
       });
       return res.json(screams);
+    })
+    .catch(err => {
+      console.log(err);
+    });
+});
+exports.createScreams = functions.https.onRequest((req, res) => {
+  const newScreams = {
+    body: req.body.body,
+    userHandle: req.body.userHandle,
+    createdAt: admin.firestore.Timestamp.fromDate(new Date())
+  };
+  admin
+    .firestore()
+    .collection("screams")
+    .add(newScreams)
+    .then(doc => {
+      res.json(`document ${doc.id} created successfully`);
     })
     .catch(err => {
       console.log(err);
