@@ -1,12 +1,11 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
+const express = require("express");
+const app = express();
 
 admin.initializeApp();
-exports.helloWorld = functions.https.onRequest((request, response) => {
-  response.send("Hello from Firebase!");
-});
 
-exports.getScreams = functions.https.onRequest((req, res) => {
+app.get("/screams", (req, res) => {
   admin
     .firestore()
     .collection("screams")
@@ -14,7 +13,10 @@ exports.getScreams = functions.https.onRequest((req, res) => {
     .then(data => {
       let screams = [];
       data.forEach(doc => {
-        screams.push(doc.data());
+        screams.push({
+          screamId: doc.id,
+          ...doc.data()
+        });
       });
       return res.json(screams);
     })
@@ -22,7 +24,8 @@ exports.getScreams = functions.https.onRequest((req, res) => {
       console.error(err);
     });
 });
-exports.createScreams = functions.https.onRequest((req, res) => {
+
+app.post("/scream", (req, res) => {
   const newScreams = {
     body: req.body.body,
     userHandle: req.body.userHandle,
@@ -40,3 +43,5 @@ exports.createScreams = functions.https.onRequest((req, res) => {
       res.status(500).json({ error: "something went wrong" });
     });
 });
+
+exports.api = functions.https.onRequest(app);
