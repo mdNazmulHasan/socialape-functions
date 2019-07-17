@@ -19,7 +19,7 @@ exports.getScreams = functions.https.onRequest((req, res) => {
       return res.json(screams);
     })
     .catch(err => {
-      console.log(err);
+      console.error(err);
     });
 });
 exports.createScreams = functions.https.onRequest((req, res) => {
@@ -36,6 +36,7 @@ exports.createScreams = functions.https.onRequest((req, res) => {
       res.json(`document ${doc.id} created successfully`);
     })
     .catch(err => {
-      console.log(err);
+      console.error(err);
+      res.status(500).json({ error: "something went wrong" });
     });
 });
