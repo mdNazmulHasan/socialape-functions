@@ -76,7 +76,11 @@ app.post("/signup", (req, res) => {
           })
           .catch(err => {
             console.error(err);
-            res.status(500).json({ error: "something went wrong" });
+            if (err.code === "auth/email-already-in-use") {
+              return res.status(400).json({ email: "email already in use" });
+            } else {
+              return res.status(500).json({ error: err.code });
+            }
           });
       }
     });
