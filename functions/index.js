@@ -4,6 +4,8 @@ const express = require("express");
 const firebase = require("firebase");
 const app = express();
 admin.initializeApp();
+const db = admin.firestore();
+
 const firebaseConfig = {
   apiKey: "AIzaSyBTwihrwXcfIxuZA-JIFpwDQmRevLEMb_0",
   authDomain: "kinetic-dream-106907.firebaseapp.com",
@@ -16,8 +18,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 app.get("/screams", (req, res) => {
-  admin.firestore()
-    .collection("screams")
+  db.collection("screams")
     .orderBy("createdAt", "desc")
     .get()
     .then(data => {
@@ -41,8 +42,7 @@ app.post("/scream", (req, res) => {
     userHandle: req.body.userHandle,
     createdAt: new Date().toISOString()
   };
-  admin.firestore()
-    .collection("screams")
+  db.collection("screams")
     .add(newScreams)
     .then(doc => {
       res.json(`document ${doc.id} created successfully`);
@@ -59,17 +59,26 @@ app.post("/signup", (req, res) => {
     confirmPassword: req.body.confirmPassword,
     handle: req.body.handle
   };
-  firebase
-    .auth()
-    .createUserWithEmailAndPassword(newUser.email, newUser.password)
-    .then(result => {
-      return res
-        .status(201)
-        .json({ message: `user ${result.user.uid} created` });
-    })
-    .catch(err => {
-      console.error(err);
-      res.status(500).json({ error: "something went wrong" });
+  db.doc(`/users/${newUser.handle}`)
+    .get()
+    .then(doc => {
+      if (doc.exists) {
+        res.status(400).json({ handle: "handle already taken" });
+      } else {
+        firebase
+          .auth()
+          .createUserWithEmailAndPassword(newUser.email, newUser.password)
+          .then(data => {
+            return data.user.getIdToken;
+          })
+          .then(token => {
+            return res.status(201).json({ token });
+          })
+          .catch(err => {
+            console.error(err);
+            res.status(500).json({ error: "something went wrong" });
+          });
+      }
     });
 });
 
