@@ -2,7 +2,7 @@ const functions = require("firebase-functions");
 const express = require("express");
 const app = express();
 const { getAllScreams, saveScreams } = require("./handlers/screams");
-const { signUp, login } = require("./handlers/user");
+const { signUp, login, uploadImage } = require("./handlers/user");
 const FBAuth = require("./util/fbAuth");
 
 //scream routes
@@ -12,5 +12,6 @@ app.post("/scream", FBAuth, saveScreams);
 //user routes
 app.post("/signup", signUp);
 app.post("/login", login);
+app.post("/user/image", FBAuth, uploadImage);
 
 exports.api = functions.https.onRequest(app);
