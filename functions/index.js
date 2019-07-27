@@ -1,7 +1,7 @@
 const functions = require("firebase-functions");
 const express = require("express");
 const app = express();
-const { getAllScreams, saveScreams } = require("./handlers/screams");
+const { getAllScreams, saveScreams, getScream } = require("./handlers/screams");
 const {
   signUp,
   login,
@@ -14,6 +14,7 @@ const FBAuth = require("./util/fbAuth");
 //scream routes
 app.get("/screams", getAllScreams);
 app.post("/scream", FBAuth, saveScreams);
+app.get("/scream/:screamId", getScream);
 
 //user routes
 app.post("/signup", signUp);
