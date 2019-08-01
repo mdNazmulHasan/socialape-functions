@@ -173,7 +173,7 @@ exports.uploadImage = (req, res) => {
         }/o/${imageFileName}?alt=media`;
         return db
           .doc(`/users/${req.user.handle}`)
-          .update({ imageUr: imageUrl });
+          .update({ imageUrl: imageUrl });
       })
       .then(() => {
         return res.json({ message: "image uploaded" });

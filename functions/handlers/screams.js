@@ -22,12 +22,17 @@ exports.saveScreams = (req, res) => {
   const newScreams = {
     body: req.body.body,
     userHandle: req.user.handle,
-    createdAt: new Date().toISOString()
+    userImage: req.user.imageUrl,
+    createdAt: new Date().toISOString(),
+    likeCount: 0,
+    commentCount: 0
   };
   db.collection("screams")
     .add(newScreams)
     .then(doc => {
-      res.json(`document ${doc.id} created successfully`);
+      const resScream = newScreams;
+      resScream.screamId = doc.id;
+      res.json(resScream);
     })
     .catch(err => {
       console.error(err);
@@ -65,7 +70,8 @@ exports.getScream = (req, res) => {
 };
 
 exports.commentOnScream = (req, res) => {
-  if (req.body.body.trim() === "") return res.status(400).json({ error: "Must not be empty" });
+  if (req.body.body.trim() === "")
+    return res.status(400).json({ error: "Must not be empty" });
   const newComment = {
     body: req.body.body,
     createdAt: new Date().toISOString(),
