@@ -70,8 +70,7 @@ exports.getScream = (req, res) => {
 };
 
 exports.commentOnScream = (req, res) => {
-  if (req.body.body.trim() === "")
-    return res.status(400).json({ error: "Must not be empty" });
+  if (req.body.body.trim() === "") return res.status(400).json({ error: "Must not be empty" });
   const newComment = {
     body: req.body.body,
     createdAt: new Date().toISOString(),
@@ -133,6 +132,48 @@ exports.likeScream = (req, res) => {
           });
       } else {
         return res.status(400).json({ error: "already liked" });
+      }
+    })
+    .catch(error => {
+      console.error(error);
+      return res.status(500).json({ error: "something went wrong" });
+    });
+};
+
+exports.unlikeScream = (req, res) => {
+  const likeDoc = db
+    .collection("likes")
+    .where("userHandle", "==", req.user.handle)
+    .where("screamId", "==", req.params.screamId)
+    .limit(1);
+
+  const screamDoc = db.doc(`/screams/${req.params.screamId}`);
+  let screamData = {};
+  screamDoc
+    .get()
+    .then(doc => {
+      if (doc.exists) {
+        screamData = doc.data();
+        screamData.screamId = doc.id;
+        return likeDoc.get();
+      } else {
+        return res.status(404).json({ error: "scream not found" });
+      }
+    })
+    .then(data => {
+      if (data.empty) {
+        return res.status(400).json({ error: "not liked" });
+      } else {
+        return db
+          .doc(`likes/${data.docs[0].id}`)
+          .delete()
+          .then(() => {
+            screamData.likeCount--;
+            return screamDoc.update({ likeCount: screamData.likeCount });
+          })
+          .then(() => {
+            return res.json(screamData);
+          });
       }
     })
     .catch(error => {
