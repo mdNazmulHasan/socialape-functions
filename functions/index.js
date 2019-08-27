@@ -57,6 +57,7 @@ exports.createNotificationOnLike = functions.firestore.document("likes/{id}").on
       }
     });
 });
+
 exports.createNotificationOnComments = functions.firestore
   .document("comments/{id}")
   .onCreate(snapshot => {
@@ -70,7 +71,7 @@ exports.createNotificationOnComments = functions.firestore
               createdAt: new Date().toISOString(),
               recipient: doc.data().userHandle,
               sender: snapshot.data().userHandle,
-              type: "like",
+              type: "comments",
               read: false,
               screamId: doc.id
             })
