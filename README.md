@@ -5,7 +5,7 @@
 ![GitHub contributors](https://img.shields.io/github/contributors/mdNazmulHasan/socialape-functions)
 ![GitHub stars](https://img.shields.io/github/stars/mdNazmulHasan/socialape-functions?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/mdNazmulHasan/socialape-functions?style=social)
-![Twitter Follow](https://img.shields.io/twitter/follow/scottydocs?style=social)
+![Twitter Follow](https://img.shields.io/twitter/follow/hasan101002?style=social)
 
 Project name is a `<utility/tool/feature>` that allows `<insert_target_audience>` to do `<action/task_it_does>`. 
 
